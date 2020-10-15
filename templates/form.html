@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title data-l10n-id="ep_user_creator.menu_entry">
+      Shout message - Etherpad
+    </title>
+    <meta name="viewport" content="width=device-width" />
+    <link rel="stylesheet" href="../static/css/admin.css" />
+    <script src="../static/js/jquery.js"></script>
+    <link
+      rel="localizations"
+      type="application/l10n+json"
+      href="../locales.json"
+    />
+    <script type="text/javascript" src="../static/js/html10n.js"></script>
+    <script type="text/javascript" src="../static/js/l10n.js"></script>
+  </head>
+  <body>
+    <div id="wrapper">
+      <div class="menu">
+        <h1>Etherpad</h1>
+        <ul>
+          <% e.begin_block("adminMenu"); %>
+          <li><a href="plugins">Plugin manager</a></li>
+          <li><a href="settings">Settings</a></li>
+          <li><a href="plugins/info">Troubleshooting information</a></li>
+          <% e.end_block(); %>
+        </ul>
+      </div>
+      <div class="innerwrapper">
+        <div class="left" data-l10n-id="ep_user_creator.fullname_prompt"></div>
+        <div class="right">
+          <input
+            type="input"
+            id="ep_user_creator-fullname"
+            maxlength="100"
+            autofocus
+            x-webkit-speech
+          />
+        </div>
+        <div class="left" data-l10n-id="ep_user_creator.username_prompt"></div>
+        <div class="right">
+          <input
+            type="input"
+            id="ep_user_creator-username"
+            maxlength="100"
+            autofocus
+            x-webkit-speech
+          />
+        </div>
+        <div class="left" data-l10n-id="ep_user_creator.email_prompt"></div>
+        <div class="right">
+          <input
+            type="input"
+            id="ep_user_creator-email"
+            maxlength="100"
+            autofocus
+            x-webkit-speech
+          />
+        </div>
+        <button
+          onclick="submitForm()"
+          data-l10n-id="ep_user_creator.submit"
+        ></button>
+      </div>
+      <script>
+        function addEnterListener(input) {
+          input.addEventListener("keydown", function (event) {
+            if (event.keyCode === 13) {
+              submitForm();
+            }
+          });
+        }
+        ["fullname", "username", "email"].forEach(function (i) {
+          addEnterListener(document.getElementById("ep_password_change-" + i));
+        });
+
+        function clearForm() {
+          document.getElementById("ep_user_creator-fullname").value = "";
+          document.getElementById("ep_user_creator-username").value = "";
+          document.getElementById("ep_user_creator-email").value = "";
+        }
+        clearForm();
+        function submitForm() {
+          var fullname = document.getElementById("ep_user_creator-fullname")
+            .value;
+          var username = document.getElementById("ep_user_creator-username")
+            .value;
+          var email = document.getElementById("ep_user_creator-email").value;
+          if (fullname !== "" && username !== "" && email !== "") {
+            $.ajax({
+              type: "POST",
+              url: "/admin/create_user",
+              data: JSON.stringify({
+                fullname: fullname,
+                username: username,
+                email: email,
+              }),
+              cache: false,
+              statusCode: {
+                204: function () {
+                  clearForm();
+                  alert(window._("ep_user_creator.success"));
+                },
+                400: function () {
+                  alert(window._("ep_user_creator.bad_request"));
+                },
+                500: function () {
+                  alert(window._("ep_user_creator.exists_error"));
+                },
+                501: function () {
+                  alert(window._("ep_user_creator.writable_error"));
+                },
+              },
+            });
+          } else {
+            alert(window._("ep_user_creator.fill_error"));
+          }
+
+          return false;
+        }
+      </script>
+    </div>
+  </body>
+</html>

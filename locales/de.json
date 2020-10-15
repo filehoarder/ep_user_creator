@@ -1,0 +1,11 @@
+{
+  "ep_user_creator.menu_entry": "Benutzer*in erstellen",
+  "ep_user_creator.fullname_prompt": "Voller Name",
+  "ep_user_creator.username_prompt": "Benutzer*innenname",
+  "ep_user_creator.email_promt": "Emailadresse",
+  "ep_user_creator.submit": "Erstellen",
+  "ep_user_creator.fill_error": "Alle Felder muessen ausgefuellt sein",
+  "ep_user_creator.success": "Benutzer*in erfolgreich erstellt",
+  "ep_user_creator.writable_error": "Fehler beim erstellen - Dateien koennen nicht geschrieben werden",
+  "ep_user_creator.exists_error": "Fehler beim erstellen - Benutzer*inname existiert bereits"
+}

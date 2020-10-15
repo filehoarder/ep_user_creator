@@ -1,0 +1,11 @@
+{
+  "ep_user_creator.menu_entry": "Create User",
+  "ep_user_creator.fullname_prompt": "Full Name",
+  "ep_user_creator.username_prompt": "Username",
+  "ep_user_creator.email_prompt": "Email",
+  "ep_user_creator.submit": "Create",
+  "ep_user_creator.fill_error": "Fill out all fields",
+  "ep_user_creator.success": "User created successfully",
+  "ep_user_creator.writable_error": "Error creating user - cannot write files",
+  "ep_user_creator.exists_error": "Error creating user - username exists"
+}

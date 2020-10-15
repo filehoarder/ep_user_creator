@@ -1,0 +1,13 @@
+{
+  "parts": [
+    {
+      "name": "user_creator",
+      "pre": ["ep_hash_auth/ep_hash_auth"],
+      "post": ["ep_etherpad-lite/static"],
+      "hooks": {
+        "expressCreateServer": "ep_user_creator/index:registerRoute",
+        "eejsBlock_adminMenu": "ep_user_creator/index"
+      }
+    }
+  ]
+}
