@@ -5,6 +5,10 @@ var crypto = require("crypto");
 
 var fs = require("fs");
 
+var child_process = require("child_process");
+
+var url = require("url");
+
 var settings = require("ep_etherpad-lite/node/utils/Settings");
 
 var hash_typ = "sha512";
@@ -53,41 +57,70 @@ exports.registerRoute = function (hook_name, args, cb) {
       }
 
       if (parsed.fullname && parsed.username && parsed.email) {
-        createUser(res, parsed);
+        createUser(res, req, parsed);
       } else {
-        console.log("body is not complete:" + body);
+        console.log("body is not complete:" + parsed);
         res.status(400).send();
       }
     });
   });
 };
 
-function createUser(res, user) {
-  var userDir = hash_dir + "/" + user.username;
+function createUser(res, req, user) {
+  if (!(settings.ep_user_creator.createCommand && settings.ep_user_creator.createArgs)) {
+    // create hash by hand
+    var userDir = hash_dir + "/" + user.username;
 
-  try {
-    fs.mkdirSync(userDir);
-  } catch (err) {
-    console.log(user.username + " does exist: " + err);
-    res.status(500).send();
+    try {
+      fs.mkdirSync(userDir);
+    } catch (err) {
+      console.log(user.username + " does exist: " + err);
+      res.status(500).send();
+    }
+
+    var password = crypto.randomBytes(6).toString("base64");
+
+    var hash = crypto.createHash(hash_typ).update(password).digest(hash_dig);
+    var hashFile = userDir + "/" + hash_ext;
+    var displaynameFile = userDir + "/" + displayname_ext;
+
+    try {
+      fs.writeFileSync(hashFile, hash);
+      fs.writeFileSync(displaynameFile, user.fullname);
+
+      //sendmail with password here
+      console.log("new password for testing purposes: " + password);
+
+      res.status(204).send();
+    } catch (err) {
+      console.log(err);
+      res.status(501).send();
+    }
+  } else {
+    // use create script
+    var cmd = settings.ep_user_creator.createCommand;
+    var args = settings.ep_user_creator.createArgs
+      .replace('%m', user.email)
+      .replace('%d', user.fullname);
+    if (req.subdomains) {
+      var teamPadName = req.subdomains[0];
+    } else {
+      var teamPadName = req.baseUrl;
+    }
+    console.log("teamPadName should be: " + teamPadName);
+    var args = args.replace('%t', teamPadName);
+    child_process.exec(cmd + ' ' + args, (err, stdout, stderr) => {
+      console.log("exec " + cmd);
+      if (err) {
+	console.log("err: " + err);
+      }
+      if (stdout) {
+	console.log("stdout: " + stdout);
+      }
+      if (stderr) {
+	console.log("stderr: " + stderr);
+      }
+    });
   }
 
-  var password = crypto.randomBytes(6).toString("base64");
-
-  var hash = crypto.createHash(hash_typ).update(password).digest(hash_dig);
-  var hashFile = userDir + "/" + hash_ext;
-  var displaynameFile = userDir + "/" + displayname_ext;
-
-  try {
-    fs.writeFileSync(hashFile, hash);
-    fs.writeFileSync(displaynameFile, user.fullname);
-
-    //sendmail with password here
-    console.log("new password for testing purposes: " + password);
-
-    res.status(204).send();
-  } catch (err) {
-    console.log(err);
-    res.status(501).send();
-  }
 }
