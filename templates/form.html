@@ -38,8 +38,9 @@
             x-webkit-speech
           />
         </div>
-        <div class="left" data-l10n-id="ep_user_creator.username_prompt"></div>
+        <!--div class="left" data-l10n-id="ep_user_creator.username_prompt"></div>
         <div class="right">
+	  HIDDEN FOR NOW
           <input
             type="input"
             id="ep_user_creator-username"
@@ -47,7 +48,7 @@
             autofocus
             x-webkit-speech
           />
-        </div>
+        </div-->
         <div class="left" data-l10n-id="ep_user_creator.email_prompt"></div>
         <div class="right">
           <input
@@ -71,29 +72,29 @@
             }
           });
         }
-        ["fullname", "username", "email"].forEach(function (i) {
+        ["fullname",/*"username",*/ "email"].forEach(function (i) {
           addEnterListener(document.getElementById("ep_password_change-" + i));
         });
 
         function clearForm() {
           document.getElementById("ep_user_creator-fullname").value = "";
-          document.getElementById("ep_user_creator-username").value = "";
+          //document.getElementById("ep_user_creator-username").value = "";
           document.getElementById("ep_user_creator-email").value = "";
         }
         clearForm();
         function submitForm() {
           var fullname = document.getElementById("ep_user_creator-fullname")
             .value;
-          var username = document.getElementById("ep_user_creator-username")
-            .value;
+          //var username = document.getElementById("ep_user_creator-username")
+          //  .value;
           var email = document.getElementById("ep_user_creator-email").value;
-          if (fullname !== "" && username !== "" && email !== "") {
+          if (fullname !== "" &&/* username !== "" &&*/ email !== "") {
             $.ajax({
               type: "POST",
               url: "/admin/create_user",
               data: JSON.stringify({
                 fullname: fullname,
-                username: username,
+                username: email,
                 email: email,
               }),
               cache: false,
